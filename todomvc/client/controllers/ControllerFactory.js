@@ -337,11 +337,11 @@ class ControllerFactory {
 
             /* GET /?filters */
             case this.actionTypes.setFilters:
-                return state
+                return state;
 
 
             default:
-                return state
+                return state;
         }
     }
 
