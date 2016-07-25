@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Header from '../components/Header';
-import MainSection from '../components/MainSection';
+import TodoList from '../components/TodoList';
 import TodoController from '../controllers';
 
 class TodoApp extends Component {
@@ -17,6 +17,7 @@ class TodoApp extends Component {
     return (
       <div>
         <Header add={actions.add} />
+        <TodoList todos={todos} actions={actions} />
       </div>
     );
   }

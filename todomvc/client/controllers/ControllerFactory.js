@@ -266,8 +266,8 @@ class ControllerFactory {
                 }
                 return Object.assign({}, state, {isAdding: true});
             case this.actionTypes.add.success:
-                state = Object.assign({}, state, {isAdding: false});
-                return this.reducer(state, {type: this.actionTypes.addNew, object: action.payload})
+                return Object.assign({}, state, {isAdding: false, objects: [...state.objects, action.payload]});
+
             case this.actionTypes.add.error:
                 alert("Error al agregar");
                 return Object.assign({}, state, {isAdding: false});
@@ -282,6 +282,7 @@ class ControllerFactory {
 
             case this.actionTypes.fetchOne.success:
                 return Object.assign({}, state, {isFetching: false, single: action.payload});
+
 
             case this.actionTypes.fetchOne.error:
                 alert("Error al obtener el objeto");
@@ -336,11 +337,7 @@ class ControllerFactory {
 
             /* GET /?filters */
             case this.actionTypes.setFilters:
-                let filters = state.filters;
-                let newFilters = Object.assign({}, filters, action.filters);
-                let newState = Object.assign({}, state, {filters: newFilters});
-                return this.reducer(newState,
-                    action={type: this.actionTypes.fetchMany.request});
+                return state
 
 
             default:
