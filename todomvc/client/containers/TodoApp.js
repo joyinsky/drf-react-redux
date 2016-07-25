@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Header from '../components/Header';
 import MainSection from '../components/MainSection';
-import * as TodoActions from '../actions/TodoActions';
+import TodoController from '../controllers';
 
 class TodoApp extends Component {
   
   componentDidMount() {
-    this.props.actions.getTodos();
+    this.props.actions.fetchMany();
   }
   
   render() {
@@ -16,7 +16,7 @@ class TodoApp extends Component {
 
     return (
       <div>
-        <Header addTodo={actions.addTodo} />
+        <Header add={actions.add} />
         <MainSection todos={todos} actions={actions} />
       </div>
     );
@@ -25,13 +25,13 @@ class TodoApp extends Component {
 
 function mapState(state) {
   return {
-    todos: state.todos
+    todos: state.todos.objects
   };
 }
 
 function mapDispatch(dispatch) {
   return {
-    actions: bindActionCreators(TodoActions, dispatch)
+    actions: bindActionCreators(TodoController.functions, dispatch)
   };
 }
 
