@@ -8,7 +8,7 @@ export default class Header extends Component {
 
   handleSave(text) {
     if (text.length !== 0) {
-      this.props.add(text);
+      this.props.add({text});
     }
   }
 

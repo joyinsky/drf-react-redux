@@ -1,6 +1,25 @@
 import { CALL_API, Schemas } from 'redux-api-middleware';
 import URI from 'urijs';
 
+const initialState = {
+    objects: [],
+    single: null,
+    options: {},
+    pagination: {
+        isEnabled: false,
+        page: null,
+        of: null
+    },
+    filters: {},
+    isFetching: false,
+    isAdding: false,
+    isUpdating: false,
+    isDeleting: false,
+    isActing () {
+        return (this.isFetching || this.isAdding || this.isUpdating || this.isDeleting);
+    }
+};
+
 
 function getCookie(cname) {
     var name = cname + "=";
@@ -24,9 +43,6 @@ class ControllerFactory {
     constructor (name, endpoint) {
         this._name = name;
         this.endpoint = URI(endpoint);
-
-        this.getUrl = (filters = {}) => {return this.endpoint.query(filters).toString();};
-
 
         this.actionTypes = {
             fetchMany: {
@@ -62,9 +78,27 @@ class ControllerFactory {
             setFilters: 'SET_' + this.name.toUpperCase() + '_FILTER'
         };
 
-        // this.fetchMany.bind(this);
-    }
 
+        this.getUrl = this.getUrl.bind(this);
+        this.getTypes = this.getTypes.bind(this);
+        this.getDeleteTypes = this.getDeleteTypes.bind(this);
+        this.getSingleItemURL = this.getSingleItemURL.bind(this);
+        this.getDefaultValues = this.getDefaultValues.bind(this);
+        this.setDefaultValues = this.setDefaultValues.bind(this);
+
+        this.fetchMany = this.fetchMany.bind(this);
+        this.fetchOne = this.fetchOne.bind(this);
+        this.fetchOptions = this.fetchOptions.bind(this);
+        this.add = this.add.bind(this);
+        this.update = this.update.bind(this);
+        this.delete = this.delete.bind(this);
+        this.setFilters = this.setFilters.bind(this);
+
+
+        this.reducer = this.reducer.bind(this);
+    }
+    
+    
     get name () {
         return this._name
     }
@@ -78,6 +112,9 @@ class ControllerFactory {
             'delete': this.delete,
             'setFilters': this.setFilters,
         }
+    }
+    getUrl (filters = {}) {
+        return this.endpoint.query(filters).toString();
     }
 
     getTypes (functionName) {
@@ -108,9 +145,10 @@ class ControllerFactory {
     }
 
     fetchMany (filters = {}) {
+        let url = this.getUrl(filters)
         return {
             [CALL_API]: {
-              endpoint: this.getUrl(),
+              endpoint: url,
               method: 'GET',
               types: this.getTypes('fetchMany'),
               // headers: {"X-CSRFToken": csrftoken},
@@ -198,6 +236,118 @@ class ControllerFactory {
             filters: filters
         }
     }
+    
+    
+    reducer (state=initialState, action={type: 'default'})  {
+        switch(action.type) {
+            /* GET / */
+            case this.actionTypes.fetchMany.request:
+                if (action.error) {
+                    alert('Error al obtener la lista');
+                    return Object.assign({}, state, {isFetching: false});
+                }
+                return Object.assign({}, state, {isFetching: true});
+            case this.actionTypes.fetchMany.success:
+                return Object.assign({}, state, {
+                    isFetching: false,
+                    objects: action.payload
+                });
+            case this.actionTypes.fetchMany.error:
+                alert('Error al obtener la lista!');
+                return Object.assign({}, state, {
+                    isFetching: false
+                });
+
+            /* POST / */
+            case this.actionTypes.add.request:
+                if (action.error) {
+                    alert('Error al agregar');
+                    return Object.assign({}, state, {isAdding: false})
+                }
+                return Object.assign({}, state, {isAdding: true});
+            case this.actionTypes.add.success:
+                state = Object.assign({}, state, {isAdding: false});
+                return this.reducer(state, {type: this.actionTypes.addNew, object: action.payload})
+            case this.actionTypes.add.error:
+                alert("Error al agregar");
+                return Object.assign({}, state, {isAdding: false});
+
+            /* GET /:id */
+            case this.actionTypes.fetchOne.request:
+                if (action.error) {
+                    alert("Error al obtener el objeto");
+                    return Object.assign({}, state, {isFetching: false});
+                }
+                return Object.assign({}, state, {isFetching: true});
+
+            case this.actionTypes.fetchOne.success:
+                return Object.assign({}, state, {isFetching: false, single: action.payload});
+
+            case this.actionTypes.fetchOne.error:
+                alert("Error al obtener el objeto");
+                return Object.assign({}, state, {isFetching: false});
+
+
+            /* PATCH /:id */
+            case this.actionTypes.update.request:
+                if (action.error) {
+                    alert("Error al actualizar el objeto");
+                    return Object.assign({}, state, {isUpdating: false});
+                }
+                return Object.assign({}, state, {isUpdating: true});
+
+            case this.actionTypes.update.success:
+                return Object.assign({}, state, {isUpdating: false, single: action.payload});
+
+            case this.actionTypes.update.error:
+                alert("Error al actualizar el objeto");
+                return Object.assign({}, state, {isUpdating: false});
+
+            /* DELETE /:id */
+            case this.actionTypes.delete.request:
+                if (action.error) {
+                    alert("Error al borrar el objeto");
+                    return Object.assign({}, state, {isDeleting: false});
+                }
+                return Object.assign({}, state, {isDeleting: true});
+
+            case this.actionTypes.delete.success:
+                return Object.assign({}, state, {isDeleting: false, single: null});
+
+            case this.actionTypes.delete.error:
+                alert("Error al borrar el objeto");
+                return Object.assign({}, state, {isDeleting: false});
+
+
+            /* OPTIONS / */
+            case this.actionTypes.fetchOptions.request:
+                if (action.error){
+                    alert("Error al obtener las opciones del objeto");
+                }
+                return state;
+
+            case this.actionTypes.fetchOptions.success:
+                return Object.assign({}, state, {options: action.payload.this.actionTypes.POST});
+
+            case this.actionTypes.fetchOptions.error:
+                alert('Error al obtener las opciones del objeto');
+                return state;
+
+
+            /* GET /?filters */
+            case this.actionTypes.setFilters:
+                let filters = state.filters;
+                let newFilters = Object.assign({}, filters, action.filters);
+                let newState = Object.assign({}, state, {filters: newFilters});
+                return this.reducer(newState,
+                    action={type: this.actionTypes.fetchMany.request});
+
+
+            default:
+                return state
+        }
+    }
+
 }
 
 export default ControllerFactory;

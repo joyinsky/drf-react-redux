@@ -17,11 +17,12 @@ class TodoApp extends Component {
     return (
       <div>
         <Header add={actions.add} />
-        <MainSection todos={todos} actions={actions} />
       </div>
     );
   }
 }
+
+// <MainSection todos={todos} actions={actions} />
 
 function mapState(state) {
   return {

@@ -5,8 +5,7 @@ import TodoTextInput from './TodoTextInput';
 export default class TodoItem extends Component {
   static propTypes = {
     todo: PropTypes.object.isRequired,
-    editTodo: PropTypes.func.isRequired,
-    deleteTodo: PropTypes.func.isRequired
+    actions: PropTypes.object.isRequired
   };
 
   constructor(props, context) {
@@ -22,9 +21,9 @@ export default class TodoItem extends Component {
 
   handleSave(id, text) {
     if (text.length === 0) {
-      this.props.deleteTodo(id);
+      this.props.actions.delete(id);
     } else {
-      this.props.editTodo(Object.assign({}, this.props.todo, {text: text}));
+      this.props.actions.update(Object.assign({}, this.props.todo, {text: text}));
     }
     this.setState({ editing: false });
   }

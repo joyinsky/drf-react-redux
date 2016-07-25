@@ -21,11 +21,11 @@ const initialState = {
 
 export default function MakeReducer(controller) {
     let actions = controller.actionTypes;
-    return (state=initialState, action={type: null}) => {
+    return (state=initialState, action={type: 'default'}) => {
         switch(action.type) {
             /* GET / */
             case actions.fetchMany.request:
-                if (action.error || action.payload.name == 'RequestError') {
+                if (action.error) {
                     alert('Error al obtener la lista');
                     return Object.assign({}, state, {isFetching: false});
                 }
@@ -43,7 +43,7 @@ export default function MakeReducer(controller) {
 
             /* POST / */
             case actions.add.request:
-                if (action.error || action.payload.name == 'RequestError') {
+                if (action.error) {
                     alert('Error al agregar');
                     return Object.assign({}, state, {isAdding: false})
                 }
@@ -57,7 +57,7 @@ export default function MakeReducer(controller) {
 
             /* GET /:id */
             case actions.fetchOne.request:
-                if (action.error || action.payload.name == 'RequestError') {
+                if (action.error) {
                     alert("Error al obtener el objeto");
                     return Object.assign({}, state, {isFetching: false});
                 }
@@ -73,7 +73,7 @@ export default function MakeReducer(controller) {
 
             /* PATCH /:id */
             case actions.update.request:
-                if (action.error || action.payload.name == 'RequestError') {
+                if (action.error) {
                     alert("Error al actualizar el objeto");
                     return Object.assign({}, state, {isUpdating: false});
                 }
@@ -88,7 +88,7 @@ export default function MakeReducer(controller) {
 
             /* DELETE /:id */
             case actions.delete.request:
-                if (action.error || action.payload.name == 'RequestError') {
+                if (action.error) {
                     alert("Error al borrar el objeto");
                     return Object.assign({}, state, {isDeleting: false});
                 }
@@ -104,7 +104,7 @@ export default function MakeReducer(controller) {
 
             /* OPTIONS / */
             case actions.fetchOptions.request:
-                if (action.error || action.payload.name == 'RequestError'){
+                if (action.error){
                     alert("Error al obtener las opciones del objeto");
                 }
                 return state;
