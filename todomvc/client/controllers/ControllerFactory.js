@@ -114,7 +114,18 @@ class ControllerFactory {
         }
     }
     getUrl (filters = {}) {
-        return this.endpoint.query(filters).toString();
+        let url = new URI(this.endpoint.toString())
+        return url.query(filters).toString();
+    }
+
+    getSingleItemURL (id) {
+        if (id) {
+            let url = new URI(this.endpoint.toString())
+            return url.segment(id.toString()).toString();
+        } else {
+            throw Error('id parameter requiered')
+        }
+
     }
 
     getTypes (functionName) {
@@ -125,15 +136,6 @@ class ControllerFactory {
     getDeleteTypes (id) {
         let constants = this.actionTypes['delete'];
         return [constants.request, {type: constants.success, meta: id}, constants.error]
-    }
-
-    getSingleItemURL (id) {
-        if (id) {
-            return this.endpoint.directory(id)
-        } else {
-            throw Error('id parameter requiered')
-        }
-
     }
 
     getDefaultValues(){
@@ -200,7 +202,7 @@ class ControllerFactory {
 
     update (values) {
         let updatedValues = this.setDefaultValues(values);
-        return {
+        let apiCall = {
             [CALL_API]: {
                 endpoint: this.getSingleItemURL(values.id),
                 method: 'PATCH',
@@ -213,6 +215,8 @@ class ControllerFactory {
                 credentials: 'same-origin'
             }
         }
+        console.log(apiCall);
+        return apiCall;
     }
 
     delete (id) {

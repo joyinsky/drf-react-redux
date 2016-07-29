@@ -28,6 +28,11 @@ export default class TodoItem extends Component {
     this.setState({ editing: false });
   }
 
+  handleMarked(todo) {
+    console.log(todo);
+    this.props.actions.update(Object.assign({}, todo, {marked: !todo.marked}));
+  }
+
   render() {
     const {todo, editTodo, deleteTodo} = this.props;
 
@@ -44,7 +49,7 @@ export default class TodoItem extends Component {
           <input className='toggle'
                  type='checkbox'
                  checked={todo.marked}
-                 onChange={() => editTodo(Object.assign({}, todo, {marked: !todo.marked}))} />
+                 onChange={() => this.handleMarked(todo)} />
           <label onDoubleClick={::this.handleDoubleClick}>
             {todo.text}
           </label>
