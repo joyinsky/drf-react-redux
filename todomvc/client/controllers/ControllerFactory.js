@@ -241,7 +241,6 @@ class ControllerFactory {
         }
     }
     
-    
     reducer (state=initialState, action={type: 'default'})  {
         switch(action.type) {
             /* GET / */
