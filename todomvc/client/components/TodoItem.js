@@ -21,7 +21,7 @@ export default class TodoItem extends Component {
 
   handleSave(id, text) {
     if (text.length === 0) {
-      this.props.actions.delete(id);
+      this.props.actions.remove(id);
     } else {
       this.props.actions.update({id: id, text: text});
     }
@@ -29,12 +29,19 @@ export default class TodoItem extends Component {
   }
 
   handleMarked(todo) {
-    console.log(todo);
-    this.props.actions.update(Object.assign({}, todo, {marked: !todo.marked}));
+    console.log();
+    this.props.actions.update({marked: !todo.marked, id: todo.id});
+    this.props.actions.refresh();
+  }
+
+  handleDelete(todo) {
+    console.log(this.props.actions);
+    this.props.actions.remove(todo.id);
+    this.props.actions.refresh();
   }
 
   render() {
-    const {todo, update, delete} = this.props;
+    const todo = this.props.todo;
 
     let element;
     if (this.state.editing) {
@@ -49,12 +56,12 @@ export default class TodoItem extends Component {
           <input className='toggle'
                  type='checkbox'
                  checked={todo.marked}
-                 onChange={() => editTodo(Object.assign({}, todo, {marked: !todo.marked}))} />
+                 onChange={() => this.handleMarked(todo)} />
           <label onDoubleClick={::this.handleDoubleClick}>
             {todo.text}
           </label>
           <button className='destroy'
-                  onClick={() => deleteTodo(todo.id)} />
+                  onClick={() => this.handleDelete(todo)} />
         </div>
       );
     }

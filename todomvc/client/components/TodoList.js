@@ -10,10 +10,16 @@ export default class TodoList extends Component {
 
     constructor(props, context) {
         super(props, context);
+        this.refresh = this.refresh.bind(this);
+    }
+
+    refresh () {
+        this.props.actions.fetchMany();
     }
 
     render() {
         const {todos, actions} = this.props;
+        actions.refresh = this.refresh;
 
         return (
             <section className="main">

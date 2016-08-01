@@ -91,7 +91,7 @@ class ControllerFactory {
         this.fetchOptions = this.fetchOptions.bind(this);
         this.add = this.add.bind(this);
         this.update = this.update.bind(this);
-        this.delete = this.delete.bind(this);
+        this.remove = this.remove.bind(this);
         this.setFilters = this.setFilters.bind(this);
 
 
@@ -109,7 +109,7 @@ class ControllerFactory {
             'fetchOne': this.fetchOne,
             'add': this.add,
             'update': this.update,
-            'delete': this.delete,
+            'remove': this.remove,
             'setFilters': this.setFilters,
         }
     }
@@ -214,12 +214,11 @@ class ControllerFactory {
                 },
                 credentials: 'same-origin'
             }
-        }
-        console.log(apiCall);
+        };
         return apiCall;
     }
 
-    delete (id) {
+    remove (id) {
         return {
             [CALL_API]: {
                 endpoint: this.getSingleItemURL(id),
