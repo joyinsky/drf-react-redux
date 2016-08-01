@@ -114,13 +114,13 @@ class ControllerFactory {
         }
     }
     getUrl (filters = {}) {
-        let url = new URI(this.endpoint.toString())
+        let url = new URI(this.endpoint.toString());
         return url.query(filters).toString();
     }
 
     getSingleItemURL (id) {
         if (id) {
-            let url = new URI(this.endpoint.toString())
+            let url = new URI(this.endpoint.toString());
             return url.segment(id.toString()).toString();
         } else {
             throw Error('id parameter requiered')
@@ -147,7 +147,7 @@ class ControllerFactory {
     }
 
     fetchMany (filters = {}) {
-        let url = this.getUrl(filters)
+        let url = this.getUrl(filters);
         return {
             [CALL_API]: {
               endpoint: url,
